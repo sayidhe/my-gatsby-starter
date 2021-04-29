@@ -1994,6 +1994,13 @@
     "@theme-ui/preset-tailwind" "0.7.5"
     "@theme-ui/preset-tosh" "0.7.5"
 
+"@theme-ui/prism@^0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@theme-ui/prism/-/prism-0.7.5.tgz#2a5ceb5c280a5e8b002e64263e6065894e7e4f61"
+  integrity sha512-OrQMb/tf5lp58+kd79lQRptieF11UOn/xbyccA6fkiwydaj5T7ZR6+wfQKaRGQnmxYp9g48WqxPyTCDELlgpNQ==
+  dependencies:
+    prism-react-renderer "^1.1.1"
+
 "@theme-ui/theme-provider@0.7.5":
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/@theme-ui/theme-provider/-/theme-provider-0.7.5.tgz#5b2a62b8849c0b05a624dbb63adeaa6677f1f558"
@@ -9960,6 +9967,11 @@ pretty-format@^25.5.0:
     ansi-regex "^5.0.0"
     ansi-styles "^4.0.0"
     react-is "^16.12.0"
+
+prism-react-renderer@^1.1.1:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/prism-react-renderer/-/prism-react-renderer-1.2.0.tgz#5ad4f90c3e447069426c8a53a0eafde60909cdf4"
+  integrity sha512-GHqzxLYImx1iKN1jJURcuRoA/0ygCcNhfGw1IT8nPIMzarmKQ3Nc+JcG0gi8JXQzuh0C5ShE4npMIoqNin40hg==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
