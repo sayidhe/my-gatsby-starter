@@ -1,10 +1,29 @@
 import { graphql, Link as GatsbyLink } from "gatsby";
 import React from "react";
+import SEO from "react-seo-component";
 import { Box, Heading, Link } from "theme-ui";
+import { useSiteMetadata } from "../hooks/use-site-metadata";
 
 export default function IndexPage({ data }) {
+  const {
+    title,
+    description,
+    siteUrl,
+    siteLanguage,
+    siteLocale,
+    twitterUsername,
+  } = useSiteMetadata();
   return (
     <>
+      <SEO
+        title={`Home`}
+        titleTemplate={title}
+        description={description}
+        pathname={siteUrl}
+        siteLanguage={siteLanguage}
+        siteLocale={siteLocale}
+        twitterUsername={twitterUsername}
+      />
       {data.allMdx.nodes.map(({ id, excerpt, frontmatter, slug }) => (
         <Box
           key={id}
