@@ -4,7 +4,7 @@
 
 - 为什么选择 Gatsby?
 
-是静态网站生成器，延伸自主流的 React 框架。与 Markdownn 文件系统结合，创建静态的播客站点。
+是静态网站生成器，延伸自主流的 React 框架。与 Markdownn 文件系统结合，创建静态的博客站点。
 
 - Markdown 和 MDX 格式
 
@@ -153,7 +153,7 @@ touch content/2021/03/08/third-post/index.mdx
 
 ## 头部信息 Front matter
 
-在我为播客添加内容之前，我想谈一谈头部信息。
+在我为博客添加内容之前，我想谈一谈头部信息。
 
 头部文件是一种存储有关文件信息的方法，当 Gatsby 从文件中构建页面的时候，该信息可以被 Gatsby 使用。现在，我将添加博文的标题和日期。我还将在其中添加一些内容。这是我们的第一篇文章：
 
@@ -717,7 +717,7 @@ export const Layout = ({ children }) => {
 
 这将返回 `Layout` 所包含的，也就是上面的 `h1`。
 
-我将返回 index 页面（`src/pages.index.js`），添加：
+我将返回 index 页面（`src/pages/index.js`），添加：
 
 ```javascript
 import React from "react";
@@ -737,7 +737,7 @@ export default function IndexPage() {
 结果是，header 部分应用了布局，且 `This is wrapped` 显示在页面上。
 
 
-## 首页的播客列表
+## 首页的博客列表
 
 现在是时候获取我在开头创建的帖子，并将其作为可点击链接的列表显示在索引页面上。
 
@@ -1510,3 +1510,210 @@ module.exports = {
 git add .
 git commit -m 'add and configure images'
 ```
+
+## SEO
+
+为站点添加 SEO。用 [React SEO Component](https://scottspence.com/2020/05/04/react-seo-component/) 这个模块。
+
+```bash
+yarn add react-seo-component react-helmet gatsby-plugin-react-helmet
+```
+
+添加 `gatsby-plugin-react-helmet` 至 `gatsby-config.js`：
+
+```
+module.exports = {
+  siteMetadata,
+  plugins: [
++   `gatsby-plugin-react-helmet`,
+    `gatsby-plugin-theme-ui`,
+    `gatsby-plugin-sharp`,
+    {
+  // rest unchanged
+```
+
+在 `siteMetadata` 对象中添加参数：
+
+```
+const siteMetadata = {
+  title: `My Gatsby Blog`,
+  description: `This is my coding blog.`,
++  lastBuildDate: new Date(Date.now()).toISOString(),
++  siteUrl: `https://dummy-url-for-now.com`,
++  authorName: `Author McAuthorson`,
++  twitterUsername: `@authorOfPosts`,
++  siteLanguage: `en-GB`,
++  siteLocale: `en_gb`,
+};
+```
+
+在 `useSiteMetadate` hook 中添加其他参数：
+
+```javascript
+// src/hooks/use-site-metadata.js
+
+import { graphql, useStaticQuery } from "gatsby";
+export const useSiteMetadata = () => {
+  const { site } = useStaticQuery(
+    graphql`
+      query SITE_METADATA_QUERY {
+        site {
+          siteMetadata {
+            title
+            description
++            lastBuildDate
++            siteUrl
++            authorName
++            twitterUsername
++            siteLanguage
++            siteLocale
+          }
+        }
+      }
+    `
+  );
+  return site.siteMetadata;
+};
+```
+
+SEO 参数将添加至所有页面。修改 `src/pages/{mdx.slug}.js`：
+
+```javascript
+import { graphql } from "gatsby";
+import { MDXRenderer } from "gatsby-plugin-mdx";
+import React from "react";
++ import SEO from "react-seo-component";
+import { Box } from "theme-ui";
++ import { useSiteMetadata } from "../hooks/use-site-metadata";
+
+export default function PostPage({ data }) {
+  const {
+    body,
++    slug,
++    excerpt,
++    frontmatter: { title, date },
+  } = data.mdx;
++  const {
++    title: siteTitle,
++    siteUrl,
++    siteLanguage,
++    siteLocale,
++    twitterUsername,
++    authorName,
++  } = useSiteMetadata();
+  return (
+    <>
++      <SEO
++        title={title}
++        titleTemplate={siteTitle}
++        description={excerpt}
++        pathname={`${siteUrl}${slug}`}
++        article={true}
++        siteLanguage={siteLanguage}
++        siteLocale={siteLocale}
++        twitterUsername={twitterUsername}
++        author={authorName}
++        publishedDate={date}
++        modifiedDate={new Date(Date.now()).toISOString()}
++      />
+      <Box as="h1" variant="styles.h1" fontSize="4xl">
+        {title}
+      </Box>
+      <MDXRenderer>{body}</MDXRenderer>
+    </>
+  );
+}
+
+export const query = graphql`
+  query POST_BY_SLUG($slug: String) {
+    mdx(slug: { eq: $slug }) {
+      id
+      slug
+      body
++      excerpt
+      frontmatter {
+        date
+        title
+      }
+    }
+  }
+`;
+```
+
+`siteUrl`, `slug` 和 `excerpt` 用来放置规范链接，`excerpt` 用来 meta 信息呈现。
+
+我正在使用 `siteMetadata` hook 来获取组件所需的其余信息。 `title` 和 `titleTemplate` 用于组成您在浏览器选项卡中看到的内容。
+
+简化 `src/pages/index.js`：
+
+```javascript
+import { graphql, Link as GatsbyLink } from "gatsby";
+import React from "react";
++ import SEO from "react-seo-component";
+import { Box, Heading, Link } from "theme-ui";
++ import { useSiteMetadata } from "../hooks/use-site-metadata";
+
+export default function IndexPage({ data }) {
++  const {
++    title,
++    description,
++    siteUrl,
++    siteLanguage,
++    siteLocale,
++    twitterUsername,
++  } = useSiteMetadata();
+  return (
+    <>
++      <SEO
++        title={`Home`}
++        titleTemplate={title}
++        description={description}
++        pathname={siteUrl}
++        siteLanguage={siteLanguage}
++        siteLocale={siteLocale}
++        twitterUsername={twitterUsername}
++      />
+      {data.allMdx.nodes.map(({ id, excerpt, frontmatter, slug }) => (
+      ))}
+      )
+      }
+// rest of component unchanged
+```
+
+现在我可以构建站点（几乎可以用于生产），一旦构建完成，我就可以查看元标记的页面源代码：
+
+```bash
+# build the site first
+yarn build
+# use gatsby serve to run built site locally
+yarn serve
+```
+
+提交变动
+
+```bash
+git add .
+git commit -m 'add SEO component :sweat_smile:'
+```
+
+## 推至 GitHub
+
+您可能想知道为什么我在每个部分的末尾都进行 Git 提交。 那是因为我现在要把项目推送到 GitHub。
+
+在你的 repository 中，添加 `my-gatsby-blog`
+
+```bash
+git remote add origin https://github.com/yourrepo/my-gatsby-blog
+git branch -M main
+git push -u origin main
+```
+
+
+## 部署
+
+- [Vercel](https://vercel.com/)
+- [Netlify](https://www.netlify.com/)
+- [Render](https://render-web.onrender.com/)
+
+
+## 结束！
