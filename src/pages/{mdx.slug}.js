@@ -1,7 +1,7 @@
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import React from "react";
-import SEO from "react-seo-component";
+import Seo from "react-seo-component";
 import { Box } from "theme-ui";
 import { useSiteMetadata } from "../hooks/use-site-metadata";
 
@@ -22,7 +22,7 @@ export default function PostPage({ data }) {
   } = useSiteMetadata();
   return (
     <>
-      <SEO
+      <Seo
         title={title}
         titleTemplate={siteTitle}
         description={excerpt}

@@ -1,6 +1,6 @@
 import { graphql, Link as GatsbyLink } from "gatsby";
 import React from "react";
-import SEO from "react-seo-component";
+import Seo from "react-seo-component";
 import { Box, Heading, Link } from "theme-ui";
 import { useSiteMetadata } from "../hooks/use-site-metadata";
 
@@ -15,7 +15,7 @@ export default function IndexPage({ data }) {
   } = useSiteMetadata();
   return (
     <>
-      <SEO
+      <Seo
         title={`Home`}
         titleTemplate={title}
         description={description}
